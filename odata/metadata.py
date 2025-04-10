@@ -230,7 +230,7 @@ class MetaData(object):
         base_class = base or declarative_base()
         all_types = {}
 
-        def sanitize_enum_name(self, name):
+        def sanitize_enum_name(name):
             if name == '_x0020_':
                 return 'Empty'
             sanitized = ''.join(c if c.isalnum() else '_' for c in name).strip('_')
