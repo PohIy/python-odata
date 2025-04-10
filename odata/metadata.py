@@ -230,6 +230,12 @@ class MetaData(object):
         base_class = base or declarative_base()
         all_types = {}
 
+        def sanitize_enum_name(self, name):
+            if name == '_x0020_':
+                return 'Empty'
+            sanitized = ''.join(c if c.isalnum() else '_' for c in name).strip('_')
+            return f'enum_{sanitized}' if name.startswith('_') else sanitized
+
         def get_entity_or_prop_from_type(typename):
             if typename is None:
                 return
@@ -246,7 +252,7 @@ class MetaData(object):
                 enum_task = progress.add_task(f"Enums for {schema['name']}", total=len(schema['enum_types']))
                 for enum_type in schema['enum_types']:
                     progress.update(enum_task, advance=1)
-                    names = [(i['name'], i['value']) for i in enum_type['members']]
+                    names = [(sanitize_enum_name(i['name']), i['value']) for i in enum_type['members']]
                     created_enum = EnumType(enum_type['name'], names=names)
                     all_types[enum_type['fully_qualified_name']] = created_enum
 
